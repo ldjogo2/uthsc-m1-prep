@@ -268,6 +268,7 @@ label.field{display:flex; flex-direction:column; gap:6px; font-size:13px; font-w
     <button class="tab" data-view="search">Search</button>
     <button class="tab" data-view="progress">Progress</button>
   </nav>
+  <button class="theme-toggle" id="howtoBtn" title="How to study" aria-label="How to study">?</button>
   <button class="theme-toggle" id="themeToggle" title="Toggle light/dark">🌙</button>
 </header>
 
@@ -280,7 +281,7 @@ label.field{display:flex; flex-direction:column; gap:6px; font-size:13px; font-w
 
 <!-- Data (assembled from the generated question banks & guides) -->
 <script>
-window.MANIFEST = {"subjects": [{"key": "biochem", "name": "Biochemistry & Metabolism", "icon": "⚗️"}, {"key": "genetics", "name": "Medical Genetics", "icon": "🧬"}, {"key": "cellbio", "name": "Cell & Molecular Biology", "icon": "🔬"}, {"key": "histology", "name": "Histology", "icon": "🩻"}, {"key": "anatomy", "name": "Gross Anatomy", "icon": "🦴"}, {"key": "embryology", "name": "Embryology", "icon": "🥚"}, {"key": "physiology", "name": "Physiology", "icon": "❤️"}, {"key": "neuro", "name": "Neuroscience & Neuroanatomy", "icon": "🧠"}, {"key": "immunology", "name": "Immunology", "icon": "🛡️"}, {"key": "microbiology", "name": "Microbiology", "icon": "🦠"}, {"key": "pharmacology", "name": "Pharmacology", "icon": "💊"}, {"key": "pathology", "name": "Pathology (General)", "icon": "🧫"}, {"key": "biostatistics", "name": "Biostatistics & Epidemiology", "icon": "📊"}, {"key": "behavioral", "name": "Behavioral Science & Ethics", "icon": "⚖️"}], "generatedAt": "2026-06-16 23:15", "counts": {"questions": 1757, "flashcards": 1591, "guides": 14}};
+window.MANIFEST = {"subjects": [{"key": "biochem", "name": "Biochemistry & Metabolism", "icon": "⚗️"}, {"key": "genetics", "name": "Medical Genetics", "icon": "🧬"}, {"key": "cellbio", "name": "Cell & Molecular Biology", "icon": "🔬"}, {"key": "histology", "name": "Histology", "icon": "🩻"}, {"key": "anatomy", "name": "Gross Anatomy", "icon": "🦴"}, {"key": "embryology", "name": "Embryology", "icon": "🥚"}, {"key": "physiology", "name": "Physiology", "icon": "❤️"}, {"key": "neuro", "name": "Neuroscience & Neuroanatomy", "icon": "🧠"}, {"key": "immunology", "name": "Immunology", "icon": "🛡️"}, {"key": "microbiology", "name": "Microbiology", "icon": "🦠"}, {"key": "pharmacology", "name": "Pharmacology", "icon": "💊"}, {"key": "pathology", "name": "Pathology (General)", "icon": "🧫"}, {"key": "biostatistics", "name": "Biostatistics & Epidemiology", "icon": "📊"}, {"key": "behavioral", "name": "Behavioral Science & Ethics", "icon": "⚖️"}], "generatedAt": "2026-06-18 00:12", "counts": {"questions": 1757, "flashcards": 1591, "guides": 14}};
 
 </script>
 <script>
@@ -660,6 +661,52 @@ function go(name){
 function clearExamTimer(){ try{ if(exam && exam.timerId){ clearInterval(exam.timerId); exam.timerId=null; } }catch(e){} }
 $('#tabs').addEventListener('click', e=>{ const b=e.target.closest('.tab'); if(b) go(b.dataset.view); });
 
+/* ----------------------------- How to study ------------------------------ */
+const HOWTO_MD = [
+"Welcome — this is your first-year prep for **UT Health Science Center**. The whole app runs on one loop:",
+"",
+"> **Learn it → drill it with flashcards → test it with questions → simulate the exam → fix weak spots.**",
+"",
+"## Start right now (15 minutes)",
+"1. Take one **10-question Quiz** (try Anatomy or Biochemistry). Read *every* explanation — even when you're right. That's where the learning is, not the score.",
+"2. Open **Flashcards**, study a deck, and rate each card honestly (Again / Hard / Good / Easy).",
+"3. Skim one **Study Guide** and one **Diagram**.",
+"",
+"That's the entire app in one sitting.",
+"",
+"## Your daily habit: Flashcards",
+"Spaced repetition is the engine. **Every day, clear your \"due\" cards** (15–20 min). Rate honestly and the app reschedules hard cards sooner and easy ones weeks out — so you review exactly what you're about to forget. Daily beats cramming, every single time.",
+"",
+"## When class covers a topic",
+"1. **Learn it** — your UTHSC lecture first, then the matching **Study Guide** section + its **Diagram**.",
+"2. **Lock it in** — do that subject's **Flashcards**.",
+"3. **Test it** — **Quiz** the subject. The questions you *miss* are the gold; re-read those.",
+"4. **Connect it** — use **Search** to pull every question, card, and guide on a term when it reappears in another class.",
+"",
+"## Before each exam (start 1–2 weeks out)",
+"- **Exam Mode** — timed, mixed-subject blocks with no feedback until you submit. Practice the real conditions.",
+"- Read the **per-subject breakdown**, restudy your lowest bars, then retake.",
+"- Check **Progress** weekly so weak spots surface early — not the night before.",
+"",
+"## Three rules that make or break it",
+"1. **Flashcards every day** — even 15 minutes. The one habit that compounds.",
+"2. **Read the explanations even when you're right** — treat each as a 20-second lesson.",
+"3. **This supplements your course, it doesn't replace it** — your lecture objectives decide what's on the test; use this to drill and self-test against them.",
+"",
+"You've got this. Tap **Start studying** and clear your first set of cards. 🎓"
+].join("\n");
+
+views.howto = function(){
+  if(!STATE.seenHowto){ STATE.seenHowto = true; save(); }
+  VIEW.append(el('h1','page-title','How to study 🩺'));
+  const body=el('div','guide-body'); body.innerHTML=renderMarkdown(HOWTO_MD); VIEW.append(body);
+  const row=el('div','btn-row mt');
+  const start=el('button','btn primary lg','Start studying →'); start.onclick=()=>go('dashboard');
+  const fc=el('button','btn lg','🃏 Clear my first cards'); fc.onclick=()=>flashSession({subjects:'all', onlyDue:false});
+  row.append(start,fc); VIEW.append(row);
+};
+{ const _hb=$('#howtoBtn'); if(_hb) _hb.onclick=()=>go('howto'); }
+
 /* ------------------------------ Dashboard -------------------------------- */
 views.dashboard = function(){
   const subs = subjectList();
@@ -673,6 +720,7 @@ views.dashboard = function(){
 
   VIEW.append(el('h1','page-title','Welcome back 👋'));
   VIEW.append(el('p','page-sub','Your first-year prep for UT Health Science Center College of Medicine. Pick up where you left off.'));
+  const howtoLink=el('button','btn sm ghost mb','📖 New here? How to study with this app'); howtoLink.onclick=()=>go('howto'); VIEW.append(howtoLink);
 
   const stats = el('div','grid cols-4');
   stats.append(statTile(totalQ, 'Practice questions', `${answered} attempted`));
@@ -1319,7 +1367,7 @@ function boot(){
     $$('.tab').forEach(t=>{ if(t.dataset.view!=='dashboard') t.style.opacity='.5'; });
     return;
   }
-  go('dashboard');
+  if(!STATE.seenHowto) go('howto'); else go('dashboard');
 }
 boot();
 

@@ -1,6 +1,6 @@
 /* Service worker — caches the app shell so it works fully offline after first load.
    Bump CACHE when you redeploy new content. */
-const CACHE = 'm1prep-v2';
+const CACHE = 'm1prep-v3';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-180.png'];
 
 self.addEventListener('install', e => {
